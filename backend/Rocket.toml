@@ -1,0 +1,7 @@
+#interpolate env vars like this: https://stackoverflow.com/questions/50797497/how-to-interpolate-environment-variables-within-netlify-toml-config
+[default]
+[debug]
+[release]
+secret_key = "secret"
+[default.databases]
+postgres_db = { url = "postgres://postgres:admin@localhost/blog"}

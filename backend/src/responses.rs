@@ -2,20 +2,21 @@ use diesel::result::Error as DieselError;
 use rocket::http::{ContentType, Status};
 use rocket::request::Request;
 use rocket::response::{Responder, Response};
-use rocket_contrib::json;
-use rocket_contrib::json::JsonValue;
 use std::convert::From;
 use std::io::Cursor;
+use rocket::serde::json::Json;
+use rocket::serde::json::serde_json::json;
+use serde_json::Value;
 
 #[derive(Debug)]
 pub struct APIResponse {
-    data: JsonValue,
+    data: Value,
     status: Status,
 }
 
 impl APIResponse {
     /// Set the data of the `Response` to `data`.
-    pub fn data(mut self, data: JsonValue) -> APIResponse {
+    pub fn data(mut self, data: Value) -> APIResponse {
         self.data = data;
         self
     }
@@ -115,7 +116,7 @@ pub fn conflict() -> APIResponse {
     }
 }
 
-pub fn unprocessable_entity(errors: JsonValue) -> APIResponse {
+pub fn unprocessable_entity(errors: Value) -> APIResponse {
     APIResponse {
         data: json!({ "message": errors }),
         status: Status::UnprocessableEntity,
