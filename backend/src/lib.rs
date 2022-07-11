@@ -24,7 +24,7 @@ pub fn rocket_factory() -> Result<rocket::Rocket<Build>, String> {
     let rocket = rocket::build()
         .attach(database::DbConn::fairing())
         .manage(app_config)
-        .mount("/auth/", routes![api::auth::login, api::auth::register])
+        .mount("/auth/", routes![login])
         .register(catchers![
             handlers::bad_request_handler,
             handlers::unauthorized_handler,

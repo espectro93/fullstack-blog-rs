@@ -5,46 +5,43 @@ use rocket::outcome::Outcome;
 
 use crate::database::DbConn;
 
-use crate::responses::{
-    bad_request, forbidden, internal_server_error, not_found, service_unavailable, unauthorized,
-    APIResponse,
-};
+use crate::responses::{APIResponse, BadRequest, Unauthorized, Forbidden, NotFound, InternalServerError, ServiceUnavailable};
 use crate::models::user::{User};
 
 #[catch(400)]
 pub fn bad_request_handler() -> APIResponse {
-    bad_request()
+    APIResponse::from(BadRequest { data: "Bad Request" })
 }
 
 #[catch(401)]
 pub fn unauthorized_handler() -> APIResponse {
-    unauthorized()
+    APIResponse::from(Unauthorized { data: "Unauthorized" })
 }
 
 #[catch(403)]
 pub fn forbidden_handler() -> APIResponse {
-    forbidden()
+    APIResponse::from(Forbidden { data: "Forbidden" })
 }
 
 #[catch(404)]
 pub fn not_found_handler() -> APIResponse {
-    not_found()
+    APIResponse::from(NotFound { data: "Not found" })
 }
 
 #[catch(500)]
 pub fn internal_server_error_handler() -> APIResponse {
-    internal_server_error()
+    APIResponse::from(InternalServerError { data: "Internal server error" })
 }
 
 #[catch(503)]
 pub fn service_unavailable_handler() -> APIResponse {
-    service_unavailable()
+    APIResponse::from(ServiceUnavailable { data: "Service unavailable" })
 }
 
-impl<'a, 'r> FromRequest<'a, 'r> for User{
+impl<'a> FromRequest<'a> for User {
     type Error = ();
 
-    fn from_request(request: &'a Request<'r>) -> request::Outcome<User, ()> {
+    fn from_request(request: &'a Request) -> request::Outcome<User, ()> {
         let db = <DbConn as FromRequest>::from_request(request)?;
         let keys: Vec<_> = request.headers().get("Authorization").collect();
         if keys.len() != 1 {

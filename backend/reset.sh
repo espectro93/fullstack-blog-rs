@@ -1,3 +1,3 @@
 #!/bin/bash
-dropdb --if-exists ${DATABASE_NAME}
-diesel setup --database-url ${DATABASE_URL}̣
+dropdb --if-exists blog
+diesel setup --database-url 'postgres://postgres:admin@localhost/blog'

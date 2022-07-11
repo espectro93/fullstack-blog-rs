@@ -30,7 +30,7 @@ impl APIResponse {
 
 impl From<DieselError> for APIResponse {
     fn from(_: DieselError) -> Self {
-        internal_server_error()
+        APIResponse::from(InternalServerError { data: "Internal server error" })
     }
 }
 
@@ -40,11 +40,12 @@ impl<'r> Responder<'r> for APIResponse {
 
         Response::build()
             .status(self.status)
-            .sized_body(Cursor::new(body.to_string()))
+            .sized_body(body.to_string().len(), Cursor::new(body.to_string()))
             .header(ContentType::JSON)
             .ok()
     }
 }
+
 
 pub fn ok() -> APIResponse {
     APIResponse {
@@ -74,65 +75,113 @@ pub fn no_content() -> APIResponse {
     }
 }
 
-pub fn bad_request() -> APIResponse {
-    APIResponse {
-        data: json!({"message": "Bad Request"}),
-        status: Status::BadRequest,
+#[derive(Debug)]
+pub struct BadRequest<'a> {
+    pub data: &'a str
+}
+
+impl From<BadRequest<'_>> for APIResponse {
+    fn from(error: BadRequest) -> Self {
+        APIResponse {
+            data: json!({"message" : error.data}),
+            status: Status::BadRequest,
+        }
     }
 }
 
-pub fn unauthorized() -> APIResponse {
-    APIResponse {
-        data: json!({"message": "Unauthorized"}),
-        status: Status::Unauthorized,
+#[derive(Debug)]
+pub struct Unauthorized<'a> {
+    pub data: &'a str
+}
+
+impl From<Unauthorized<'_>> for APIResponse {
+    fn from(error: Unauthorized) -> Self {
+        APIResponse {
+            data: json!({"message": error.data}),
+            status: Status::Unauthorized,
+        }
     }
 }
 
-pub fn forbidden() -> APIResponse {
-    APIResponse {
-        data: json!({"message": "Forbidden"}),
-        status: Status::Forbidden,
+#[derive(Debug)]
+pub struct Forbidden<'a> {
+    pub data: &'a str
+}
+
+impl From<Forbidden<'_>> for APIResponse {
+    fn from(error: Forbidden) -> Self {
+        APIResponse {
+            data: json!({"message": error.data}),
+            status: Status::Forbidden,
+        }
     }
 }
 
-pub fn not_found() -> APIResponse {
-    APIResponse {
-        data: json!({"message": "Not Found"}),
-        status: Status::NotFound,
+#[derive(Debug)]
+pub struct NotFound<'a> {
+    pub data: &'a str
+}
+
+impl From<NotFound<'_>> for APIResponse {
+    fn from(error: NotFound) -> Self {
+        APIResponse {
+            data: json!({"message": error.data}),
+            status: Status::NotFound,
+        }
     }
 }
 
-pub fn method_not_allowed() -> APIResponse {
-    APIResponse {
-        data: json!({"message": "Method Not Allowed"}),
-        status: Status::MethodNotAllowed,
+#[derive(Debug)]
+pub struct NotAllowed<'a> {
+    pub data: &'a str
+}
+
+impl From<NotAllowed<'_>> for APIResponse {
+    fn from(_: NotAllowed) -> Self {
+        unimplemented!()
     }
 }
 
-pub fn conflict() -> APIResponse {
-    APIResponse {
-        data: json!({"message": "Conflict"}),
-        status: Status::Conflict,
+#[derive(Debug)]
+pub struct Conflict<'a> {
+    pub data: &'a str
+}
+
+impl From<Conflict<'_>> for APIResponse {
+    fn from(_: Conflict) -> Self {
+        unimplemented!()
     }
 }
 
-pub fn unprocessable_entity(errors: Value) -> APIResponse {
-    APIResponse {
-        data: json!({ "message": errors }),
-        status: Status::UnprocessableEntity,
+#[derive(Debug)]
+pub struct UnprocessableEntity<'a> {
+    pub data: &'a str
+}
+
+impl From<UnprocessableEntity<'_>> for APIResponse {
+    fn from(_: UnprocessableEntity) -> Self {
+        unimplemented!()
     }
 }
 
-pub fn internal_server_error() -> APIResponse {
-    APIResponse {
-        data: json!({"message": "Internal Server Error"}),
-        status: Status::InternalServerError,
+#[derive(Debug)]
+pub struct InternalServerError<'a> {
+    pub data: &'a str
+}
+
+impl From<InternalServerError<'_>> for APIResponse {
+    fn from(_: InternalServerError) -> Self {
+        unimplemented!()
     }
 }
 
-pub fn service_unavailable() -> APIResponse {
-    APIResponse {
-        data: json!({"message": "Service Unavailable"}),
-        status: Status::ServiceUnavailable,
+#[derive(Debug)]
+pub struct ServiceUnavailable<'a> {
+    pub data: &'a str
+}
+
+impl From<ServiceUnavailable<'_>> for APIResponse {
+    fn from(_: ServiceUnavailable) -> Self {
+        unimplemented!()
     }
 }
